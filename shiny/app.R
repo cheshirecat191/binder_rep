@@ -20,7 +20,7 @@ library(scales) # to prevent ggplot from using scientific notification on axes
 
 # Loading data 
 # reading fgb database
-import_fgb <- read_sf("D:/meins/R/InfoFauna/data/CAPT_CHLGE_20250331.fgb") # 2do: adapt path
+import_fgb <- read_sf("../data/CAPT_CHLGE_20250331.fgb") # 2do: adapt path
 
 # create BG map
 map_CH <- ne_countries(type = "countries", country = "Switzerland",
