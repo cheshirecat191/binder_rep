@@ -1,1 +1,10 @@
 r-2022-01-01
+ggswissmaps_0.1.1
+scales_1.3.0
+BFS_0.5.12
+bsicons_0.1.2
+bslib_0.5.1
+dplyr_1.1.3
+ggplot2_3.4.4
+rnaturalearth_1.0.1
+sf_1.0-19
