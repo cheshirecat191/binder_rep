@@ -4,35 +4,24 @@
 #---
 
 #loading libraries
-library(sf) #import fgb and other geospatial tasks
-library(rnaturalearth) # for map of Switzerland - one of two implemented ones
-library(BFS) # for map of Switzerland - one of two implemented ones
-library(shiny) # for shiny app
-library(ggplot2)  # for creating pretty plots
-library(dplyr)  # for filtering and manipulating data
-library(bslib) # for cards design
-#library(bsicons) # for value box and cards, not currently used
-library(scales) # to prevent ggplot from using scientific notification on axes
+library(sf)         # import fgb and other geospatial tasks
+library(BFS)        # for map of Switzerland
+library(shiny)      # for shiny app
+library(ggplot2)    # for creating pretty plots
+library(dplyr)      # for filtering and manipulating data
+library(bslib)      # for cards design
+library(scales)     # to prevent ggplot from using scientific notification on axes
 
 
 # Loading data 
 # reading fgb database
-#import_fgb <- read_sf("D:/meins/R/InfoFauna/data/CAPT_CHLGE_20250331.fgb") # 2do: adapt path
 import_fgb <- read_sf("../data/CAPT_CHLGE_20250331.fgb")
-# create BG map from BfS:
+# create BG map from BfS with Swiss coordinate reference system:
 switzerland_sf <- bfs_get_base_maps(geom = "suis")
-switzerland_sf <- st_transform(switzerland_sf, crs = 2056)
-#or alternative map from rnaturalearth:
-map_CH <- ne_countries(type = "countries", country = "Switzerland",
-                       scale = "medium", returnclass = "sf")
-map_CH <- st_transform(map_CH, crs = 2056) #set same crs as data
+switzerland_sf <- st_transform(switzerland_sf, crs = st_crs(2056))
 
 
-# exploring data
-max_altitude <- max(import_fgb$ALTdem)
-
-
-# ui.R ---- shiny user interface
+# shiny user interface
 ui <- page_sidebar(
   title = fluidPage(
     titlePanel("Species Distribution"),                          # title panel 
@@ -70,7 +59,7 @@ ui <- page_sidebar(
 )
 
 
-# server.R ---- 
+# shiny server
 server <- function(input, output) {
 # defining text outputs for the species name, counts, Species ID...)
   output$text1 <- renderText(paste("Selected species: ", input$SP))
@@ -150,7 +139,7 @@ server <- function(input, output) {
                                         + theme(text = element_text(size = 20))
   )
   
-  #Plot of adult and juvenile animals during the year
+  # Plot of adult and juvenile animals during the year
   output$plot_year <- renderPlot(ggplot(import_fgb,aes(x = M_2, fill = M_2, colour = 'black'))
                                    + geom_histogram(data=subset(import_fgb, SP == input$SP & import_fgb$aduAgg == 1 ), # subsetting adult animals for selected species
                                                   aes(x = M_2, 
@@ -173,7 +162,7 @@ server <- function(input, output) {
                                         color = FALSE,
                                         x = "Half-Month (M_2)", y = "Percentage")
                                    + theme_minimal()
-                                   + theme(panel.grid.minor = element_blank(),                                         #remove minor grid lines
+                                   + theme(panel.grid.minor = element_blank(),                                         # remove minor grid lines
                                          panel.background = element_blank(), 
                                          axis.line = element_line(colour = "black"),
                                          text = element_text(size = 20)
